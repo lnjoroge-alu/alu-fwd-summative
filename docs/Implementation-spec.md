@@ -92,12 +92,57 @@ have half pages.
 
 ---
 
-## Accessibility plan (short version; full detail in docs/a11y-plan.md)
-- Landmarks + one `<h1>`; sensible heading order in each section.
-- A `<label for="...">` on every input; clear focus outline; skip-to-content link first.
-- Messages/errors in a `role="status"` / `aria-live` region; cap overage uses `role="alert"`.
-- Colours meet AA contrast in light and dark; never rely on colour alone (use text/icons too).
-- Works with keyboard only: Tab order, Enter/Space to activate, Esc to cancel a delete.
+## Accessibility plan
+
+**Landmarks (one of each, so screen readers can jump around):**
+- `<header>` — app title + theme toggle
+- `<nav>` — the section tabs (About / Dashboard / Records / Add-Edit / Settings)
+- `<main>` — holds the five `<section>`s; only the active one is visible
+- `<footer>` — author + repo link
+- Each `<section>` has an `aria-labelledby` pointing at its own `<h2>`.
+
+**Heading order (no skipped levels):**
+- One `<h1>` = "Book & Notes Vault" in the header.
+- Each section starts with an `<h2>` (About, Dashboard, Records, Add/Edit, Settings).
+- Sub-parts (e.g. "Last 7 days", "Reading goal") use `<h3>`.
+
+**Skip link:**
+- The very first focusable element is a "Skip to main content" link that is hidden until
+  focused, then jumps to `<main>`. Lets keyboard users skip the nav.
+
+**Forms & labels:**
+- Every input has a `<label for="id">` (no placeholder-only fields).
+- An invalid field gets `aria-invalid="true"` and `aria-describedby` pointing at its error
+  text, so the error is read out when you land on the field.
+- The form's focus moves to the first invalid field on a failed submit.
+
+**Live regions (announcements):**
+- A `role="status"` `aria-live="polite"` region announces calm updates: "Book added",
+  "Saved", "10 results".
+- The reading-goal message is `polite` while under the cap, but switches to `role="alert"`
+  (assertive) when the cap is exceeded, so it interrupts and is heard.
+
+**Focus management:**
+- Visible focus outline on everything via `:focus-visible` (2px, high-contrast colour).
+- After deleting a row, focus moves to a sensible spot (next row, or the heading) so focus
+  is never lost on a removed element.
+- A delete asks for confirmation first; Esc cancels it.
+
+**Keyboard map (everything works without a mouse):**
+
+| Key | Action |
+|-----|--------|
+| `Tab` / `Shift+Tab` | move between links, tabs, inputs, buttons |
+| `Enter` / `Space` | activate the focused tab or button |
+| `Enter` (in a form) | submit the Add/Edit form |
+| `Esc` | cancel the delete confirmation / clear the search box |
+| `Enter` on a sortable header | sort by that column (toggles direction) |
+
+**Colour & motion:**
+- Text/background colours meet WCAG AA contrast in both light and dark themes.
+- Never colour-only: errors also show an icon/text, sort shows an arrow, not just a tint.
+- Sortable headers expose state with `aria-sort` (`ascending`/`descending`/`none`).
+- The one animation respects `prefers-reduced-motion` (no motion if the user opted out).
 
 ## Breakpoints
 - ~360px: one column, cards, stacked nav.
