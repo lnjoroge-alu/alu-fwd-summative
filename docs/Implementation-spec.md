@@ -92,7 +92,7 @@ have half pages.
 
 ---
 
-## Accessibility plan
+## Accessibility plan (a11y Plan)
 
 **Landmarks (one of each, so screen readers can jump around):**
 - `<header>` — app title + theme toggle
