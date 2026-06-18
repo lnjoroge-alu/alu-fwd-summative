@@ -92,6 +92,33 @@ have half pages.
 
 ---
 
+## Wireframes (sketches)
+
+Low-fidelity sketches of each screen, mobile-first. The shared shell ( header,
+nav tabs, footer) is the same on every screen; only `<main>` changes.
+
+**About**
+
+![About screen wireframe](wireframes/about-wireframe.png)
+
+**Dashboard / Stats**
+
+![Dashboard screen wireframe](wireframes/dashboard-wireframe.png)
+
+**Records (cards on mobile, table on wider screens)**
+
+![Records screen wireframe](wireframes/records-wireframe.png)
+
+**Add / Edit form**
+
+![Add/Edit form wireframe](wireframes/add-edit-wireframe.png)
+
+**Settings**
+
+![Settings screen wireframe](wireframes/settings-wireframe.png)
+
+---
+
 ## Accessibility plan (a11y Plan)
 
 **Landmarks (one of each, so screen readers can jump around):**
