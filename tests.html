@@ -28,6 +28,7 @@
       checkDate,
       hasRepeatedWord,
     } from "./scripts/validators.js";
+    import { compileRegex, highlight, escapeHtml } from "./scripts/search.js";
 
     const results = document.getElementById("results");
     let passCount = 0;
@@ -46,36 +47,50 @@
       results.appendChild(li);
     }
 
-    // ---- Title ----
+    //  Title 
     assert("good title passes", checkTitle("Clean Code").ok, true);
     assert("empty title fails", checkTitle("").ok, false);
     assert("leading space title fails", checkTitle(" Clean Code").ok, false);
     assert("trailing space title fails", checkTitle("Clean Code ").ok, false);
 
-    // ---- Pages ----
+    //  Pages 
     assert("whole number passes", checkPages("250").ok, true);
     assert("zero fails", checkPages("0").ok, false);
     assert("leading zero fails", checkPages("0250").ok, false);
     assert("decimal fails", checkPages("25.5").ok, false);
     assert("letters fail", checkPages("abc").ok, false);
 
-    // ---- Date ----
+    //  Date 
     assert("good date passes", checkDate("2025-09-29").ok, true);
     assert("bad month fails", checkDate("2025-13-01").ok, false);
     assert("bad day fails", checkDate("2025-09-32").ok, false);
     assert("wrong format fails", checkDate("29/09/2025").ok, false);
 
-    // ---- Author and tag ----
+    //  Author and tag 
     assert("good author passes", checkAuthor("Robert Martin").ok, true);
     assert("hyphen author passes", checkAuthor("Mary-Jane Watson").ok, true);
     assert("number in author fails", checkAuthor("Robert2").ok, false);
     assert("good tag passes", checkTag("Programming").ok, true);
 
-    // ---- Advanced: repeated word ----
+    //  Advanced: repeated word 
     assert("repeated word is found", hasRepeatedWord("the the book"), true);
     assert("no repeat returns false", hasRepeatedWord("the book"), false);
 
-    // ---- Summary ----
+    //  Search: compiling the regex safely 
+    assert("empty search gives null", compileRegex("", true), null);
+    assert("broken pattern gives null", compileRegex("[", true), null);
+    assert("good pattern is not null", compileRegex("abc", true) !== null, true);
+
+    //  Search: escaping and highlighting 
+    assert("escape < and >", escapeHtml("a<b>c"), "a&lt;b&gt;c");
+    assert("highlight has no leftover html", highlight("a<b", null), "a&lt;b");
+    assert(
+      "highlight wraps the match",
+      highlight("hello", compileRegex("ell", false)).includes("<mark>ell</mark>"),
+      true
+    );
+
+    //  Summary 
     const summary = document.getElementById("summary");
     summary.textContent = passCount + " / " + total + " tests passed";
     summary.style.color = passCount === total ? "#1a7f37" : "#b00020";
