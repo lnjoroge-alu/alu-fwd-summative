@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book &amp; Notes Vault</title>
+
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+
+</head>
+
+<body>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  
+  <header class="app-header">
+    <h1>Book &amp; Notes Vault</h1>
+  </header>
+
+  <!-- Tabs: each button shows one section -->
+  <nav class="tabs" aria-label="Main sections">
+    <button class="tab" type="button" data-target="about" aria-current="true">About</button>
+    <button class="tab" type="button" data-target="dashboard">Dashboard</button>
+    <button class="tab" type="button" data-target="records">Records</button>
+    <button class="tab" type="button" data-target="add-edit">Add / Edit</button>
+    <button class="tab" type="button" data-target="settings">Settings</button>
+  </nav>
+
+  <main id="main">
+
+    <section id="about" class="panel" aria-labelledby="about-heading">
+      <h2 id="about-heading">About</h2>
+       <p>
+        Book &amp; Notes Vault is a small app for keeping a list of the books and notes I read.
+        I can add a book, search my list, see a few stats, and it saves in the browser.
+      </p>
+      <h3>Contact</h3>
+      <ul class="contact-list">
+        <li>GitHub: <a href="https://github.com/lnjoroge-alu">github.com/lnjoroge-alu</a></li>
+        <li>Email: <a href="mailto:l.njoroge@alustudent.com">l.njoroge@alustudent.com</a></li>
+      </ul>
+      </section>
+
+    <section id="dashboard" class="panel" aria-labelledby="dashboard-heading" hidden>
+      <h2 id="dashboard-heading">Dashboard</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <h3>Total books</h3>
+          <p class="stat-value" id="stat-total">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total pages</h3>
+          <p class="stat-value" id="stat-pages">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Top tag</h3>
+          <p class="stat-value" id="stat-top-tag">-</p>
+        </div>
+      </div>
+
+      <h3>Reading goal</h3>
+      <p id="goal-message">Set a reading goal in Settings.</p>
+
+      <h3>Last 7 days</h3>
+      <div class="chart" id="chart"></div>
+      </section>
+
+    <section id="records" class="panel" aria-labelledby="records-heading" hidden>
+      <h2 id="records-heading">Records</h2>
+      <div class="records-controls">
+        <label for="search-input">Search</label>
+        <input id="search-input" type="search">
+
+        <label class="checkbox-label">
+          <input id="ignore-case" type="checkbox"> Ignore case
+        </label>
+      </div>
+
+      <div id="records-list">
+        <p class="empty-message">No books yet. Add one from the Add / Edit tab.</p>
+      </div>
+      </section>
+
+    <section id="add-edit" class="panel" aria-labelledby="add-edit-heading" hidden>
+      <h2 id="add-edit-heading">Add a book</h2>
+       <form id="book-form" class="book-form">
+        <div class="field">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text">
+        </div>
+
+        <div class="field">
+          <label for="author">Author</label>
+          <input id="author" name="author" type="text">
+        </div>
+
+        <div class="field">
+          <label for="pages">Pages</label>
+          <input id="pages" name="pages" type="text">
+        </div>
+
+        <div class="field">
+          <label for="tag">Tag</label>
+          <input id="tag" name="tag" type="text">
+        </div>
+
+        <div class="field">
+          <label for="date-added">Date added</label>
+          <input id="date-added" name="dateAdded" type="text" placeholder="YYYY-MM-DD">
+        </div>
+
+        <div class="field">
+          <label for="isbn">ISBN <span class="optional">(optional)</span></label>
+          <input id="isbn" name="isbn" type="text">
+        </div>
+
+        <div class="field">
+          <label for="notes">Notes <span class="optional">(optional)</span></label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save book</button>
+          <button type="reset" class="btn">Cancel</button>
+        </div>
+      </form>
+      </section>
+    
+    <section id="settings" class="panel" aria-labelledby="settings-heading" hidden>
+      <h2 id="settings-heading">Settings</h2>
+       <div class="field">
+        <label for="reading-speed">Reading speed (pages per minute)</label>
+        <input id="reading-speed" type="text" value="1">
+      </div>
+
+      <div class="field">
+        <label for="reading-goal">Reading goal (pages)</label>
+        <input id="reading-goal" type="text" value="1500">
+      </div>
+
+      <div class="field">
+        <label for="tags-list">Tags (comma separated)</label>
+        <input id="tags-list" type="text" value="Programming, Fiction, Science">
+      </div>
+
+      <h3>Data</h3>
+      <div class="form-actions">
+        <button type="button" class="btn">Export JSON</button>
+        <button type="button" class="btn">Import JSON</button>
+      </div>
+      </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>Built by lnjoroge-alu -
+      <a href="https://github.com/lnjoroge-alu/alu-fwd-summative">Project repo</a>
+    </p>
+  </footer>
+
+  <script src="scripts/app.js"></script>
+
+</body>
+</html>
