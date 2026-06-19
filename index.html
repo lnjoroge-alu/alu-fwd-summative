@@ -52,7 +52,7 @@
           <p class="stat-value" id="stat-total">0</p>
         </div>
         <div class="stat-card">
-          <h3>Total pages</h3>
+          <h3>Pages read</h3>
           <p class="stat-value" id="stat-pages">0</p>
         </div>
         <div class="stat-card">
@@ -89,6 +89,8 @@
             <th aria-sort="none"><button type="button" class="sort-btn" data-key="pages">Pages</button></th>
             <th>Tag</th>
             <th aria-sort="none"><button type="button" class="sort-btn" data-key="dateAdded">Date</button></th>
+            <th>Notes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="records-body"></tbody>
@@ -142,7 +144,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Save book</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save book</button>
           <button type="reset" class="btn">Cancel</button>
         </div>
       </form>

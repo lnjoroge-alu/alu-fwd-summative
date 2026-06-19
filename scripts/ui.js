@@ -22,12 +22,17 @@ export function renderRecords(list, re) {
   // Build one row per book.
   list.forEach(function (book) {
     const row = document.createElement("tr");
+    if (book.read) {
+      row.className = "is-read";
+    }
     row.innerHTML =
       cell("Title", book.title, re) +
       cell("Author", book.author, re) +
       cell("Pages", String(book.pages), re) +
       cell("Tag", book.tag, re) +
-      cell("Date", book.dateAdded, re);
+      cell("Date", book.dateAdded, re) +
+      cell("Notes", book.notes, re) +
+      actionsCell(book);
     tableBody.appendChild(row);
   });
 }
@@ -35,6 +40,19 @@ export function renderRecords(list, re) {
 // Build one table cell. The data-label is used by the CSS to make cards on mobile.
 function cell(label, value, re) {
   return '<td data-label="' + label + '">' + highlight(value, re) + "</td>";
+}
+
+// Build the cell with the Edit and Delete buttons. The id is stored on each
+// button so the click handler knows which book to act on.
+function actionsCell(book) {
+  const readLabel = book.read ? "Mark unread" : "Mark read";
+  return (
+    '<td data-label="Actions">' +
+    '<button type="button" class="row-btn read-btn" data-id="' + book.id + '">' + readLabel + "</button> " +
+    '<button type="button" class="row-btn edit-btn" data-id="' + book.id + '">Edit</button> ' +
+    '<button type="button" class="row-btn delete-btn" data-id="' + book.id + '">Delete</button>' +
+    "</td>"
+  );
 }
 
 //  Dashboard stats 
@@ -45,11 +63,13 @@ export function renderStats(records, goal) {
   document.getElementById("stat-total").textContent = records.length;
 
   // total pages 
-  let totalPages = 0;
+  let pagesRead = 0;
   records.forEach(function (book) {
-    totalPages = totalPages + book.pages;
+    if (book.read) {
+      pagesRead = pagesRead + book.pages;
+    }
   });
-  document.getElementById("stat-pages").textContent = totalPages;
+  document.getElementById("stat-pages").textContent = pagesRead;
 
   // top tag
   document.getElementById("stat-top-tag").textContent = topTag(records);
@@ -58,7 +78,7 @@ export function renderStats(records, goal) {
   renderChart(records);
 
   // reading goal message
-  renderGoal(totalPages, goal);
+  renderGoal(pagesRead, goal);
 }
 
 // Find the tag that is used the most.
@@ -144,7 +164,7 @@ function toDateString(d) {
 }
 
 // Show how far the reader is from their goal. 
-function renderGoal(totalPages, goal) {
+function renderGoal(pagesRead, goal) {
   const goalMessage = document.getElementById("goal-message");
 
   if (!goal || goal <= 0) {
@@ -153,13 +173,15 @@ function renderGoal(totalPages, goal) {
     return;
   }
 
-  if (totalPages <= goal) {
-    const left = goal - totalPages;
+  if (pagesRead <= goal) {
+    const left = goal - pagesRead;
     goalMessage.setAttribute("aria-live", "polite");
-    goalMessage.textContent = left + " pages to go to reach your goal of " + goal + ".";
+    goalMessage.textContent =
+      "You have read " + pagesRead + " of " + goal + " pages. " + left + " to go.";
   } else {
-    const over = totalPages - goal;
+    const over = pagesRead - goal;
     goalMessage.setAttribute("aria-live", "assertive");
-    goalMessage.textContent = "You are " + over + " pages over your goal of " + goal + "!";
+    goalMessage.textContent =
+      "You have read " + pagesRead + " pages - " + over + " over your goal of " + goal + "!";
   }
 }
