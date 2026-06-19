@@ -29,14 +29,55 @@
 
     <section id="about" class="panel" aria-labelledby="about-heading">
       <h2 id="about-heading">About</h2>
+       <p>
+        Book &amp; Notes Vault is a small app for keeping a list of the books and notes I read.
+        I can add a book, search my list, see a few stats, and it saves in the browser.
+      </p>
+      <h3>Contact</h3>
+      <ul class="contact-list">
+        <li>GitHub: <a href="https://github.com/lnjoroge-alu">github.com/lnjoroge-alu</a></li>
+        <li>Email: <a href="mailto:l.njoroge@alustudent.com">l.njoroge@alustudent.com</a></li>
+      </ul>
       </section>
 
     <section id="dashboard" class="panel" aria-labelledby="dashboard-heading" hidden>
       <h2 id="dashboard-heading">Dashboard</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <h3>Total books</h3>
+          <p class="stat-value" id="stat-total">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total pages</h3>
+          <p class="stat-value" id="stat-pages">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Top tag</h3>
+          <p class="stat-value" id="stat-top-tag">-</p>
+        </div>
+      </div>
+
+      <h3>Reading goal</h3>
+      <p id="goal-message">Set a reading goal in Settings.</p>
+
+      <h3>Last 7 days</h3>
+      <div class="chart" id="chart"></div>
       </section>
 
     <section id="records" class="panel" aria-labelledby="records-heading" hidden>
       <h2 id="records-heading">Records</h2>
+      <div class="records-controls">
+        <label for="search-input">Search</label>
+        <input id="search-input" type="search">
+
+        <label class="checkbox-label">
+          <input id="ignore-case" type="checkbox"> Ignore case
+        </label>
+      </div>
+
+      <div id="records-list">
+        <p class="empty-message">No books yet. Add one from the Add / Edit tab.</p>
+      </div>
       </section>
 
     <section id="add-edit" class="panel" aria-labelledby="add-edit-heading" hidden>
