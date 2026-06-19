@@ -54,6 +54,68 @@ const searchMessage = document.getElementById("search-msg");
 const sortButtons = document.querySelectorAll(".sort-btn");
 
 
+// Redraw the records: search, then sort, then show.
+function refresh() {
+  const re = compileRegex(searchText, ignoreCase);
+
+  // If the user typed something but it is not a valid pattern, tell them.
+  if (searchText !== "" && re === null) {
+    searchMessage.textContent = "That search pattern is not valid.";
+  } else {
+    searchMessage.textContent = "";
+  }
+
+  // search
+  let list = getRecords().filter(function (book) {
+    return recordMatches(book, re);
+  });
+
+  // sort
+  list = sortRecords(list, sortKey, sortDirection);
+
+  // show (re is passed so matches can be highlighted)
+  renderRecords(list, re);
+}
+
+// Type in the search box -> redraw as you type.
+searchInput.addEventListener("input", function () {
+  searchText = searchInput.value;
+  refresh();
+});
+
+// Tick/untick "Ignore case" -> redraw.
+ignoreCaseBox.addEventListener("change", function () {
+  ignoreCase = ignoreCaseBox.checked;
+  refresh();
+});
+
+// Click a column header -> sort by it. Click again -> flip the direction.
+sortButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    const key = button.dataset.key;
+    if (sortKey === key) {
+      sortDirection = sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      sortKey = key;
+      sortDirection = "asc";
+    }
+    updateSortIndicators();
+    refresh();
+  });
+});
+
+// Set aria-sort on the header that is being sorted (and clear the others).
+function updateSortIndicators() {
+  sortButtons.forEach(function (button) {
+    const header = button.parentElement;
+    if (button.dataset.key === sortKey) {
+      header.setAttribute("aria-sort", sortDirection === "asc" ? "ascending" : "descending");
+    } else {
+      header.setAttribute("aria-sort", "none");
+    }
+  });
+}
+
 // ---------- Form validation and adding a book ----------
 
 const form = document.getElementById("book-form");
