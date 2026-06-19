@@ -126,3 +126,90 @@ textarea[aria-invalid="true"] {
 .form-status {
   font-weight: bold;
 }
+
+/* shown when the search pattern is broken */
+.search-msg {
+  color: #b00020;
+  font-size: 14px;
+}
+
+/*  Records table  */
+
+.records-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.records-table[hidden] {
+  display: none;
+}
+
+/* sort buttons in the header look like plain text you can click */
+.sort-btn {
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  color: #1d1d1f;
+}
+
+th[aria-sort="ascending"] .sort-btn::after {
+  content: " \25B2"; 
+}
+
+th[aria-sort="descending"] .sort-btn::after {
+    content: " \25BC"; 
+  }
+
+/* MOBILE: stack each row into a card */
+.records-table thead {
+  display: none;
+}
+
+.records-table tr {
+  display: block;
+  border: 1px solid #d6d6dc;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+.records-table td {
+  display: block;
+  padding: 4px 0;
+}
+
+.records-table td::before {
+  content: attr(data-label) ": ";
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .records-table {
+    border-collapse: collapse;
+  }
+
+  .records-table thead {
+    display: table-header-group;
+  }
+
+  .records-table tr {
+    display: table-row;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .records-table th,
+  .records-table td {
+    display: table-cell;
+    border: 1px solid #d6d6dc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .records-table td::before {
+    content: "";
+  }
+}

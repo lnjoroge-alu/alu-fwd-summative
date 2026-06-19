@@ -75,13 +75,26 @@
         <input id="search-input" type="search">
 
         <label class="checkbox-label">
-          <input id="ignore-case" type="checkbox"> Ignore case
+          <input id="ignore-case" type="checkbox" checked> Ignore case
         </label>
+
+        <span id="search-msg" class="search-msg" aria-live="polite"></span>
       </div>
 
-      <div id="records-list">
-        <p class="empty-message">No books yet. Add one from the Add / Edit tab.</p>
-      </div>
+      <table class="records-table" id="records-table">
+        <thead>
+          <tr>
+            <th aria-sort="none"><button type="button" class="sort-btn" data-key="title">Title</button></th>
+            <th>Author</th>
+            <th aria-sort="none"><button type="button" class="sort-btn" data-key="pages">Pages</button></th>
+            <th>Tag</th>
+            <th aria-sort="none"><button type="button" class="sort-btn" data-key="dateAdded">Date</button></th>
+          </tr>
+        </thead>
+        <tbody id="records-body"></tbody>
+      </table>
+
+      <p class="empty-message" id="empty-message" hidden>No books yet. Add one from the Add / Edit tab.</p>
       </section>
 
     <section id="add-edit" class="panel" aria-labelledby="add-edit-heading" hidden>
