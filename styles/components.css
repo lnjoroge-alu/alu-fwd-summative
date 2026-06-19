@@ -110,3 +110,19 @@ textarea {
   list-style: none;
   padding-left: 0;
 }
+
+/* form error messages and the status line */
+.error-message {
+  color: #b00020;
+  font-size: 14px;
+}
+
+/* a red border on a field that has an error */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #b00020;
+}
+
+.form-status {
+  font-weight: bold;
+}

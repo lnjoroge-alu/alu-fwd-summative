@@ -86,25 +86,30 @@
 
     <section id="add-edit" class="panel" aria-labelledby="add-edit-heading" hidden>
       <h2 id="add-edit-heading">Add a book</h2>
+      <output id="form-status" class="form-status" aria-live="polite"></output>
        <form id="book-form" class="book-form">
         <div class="field">
           <label for="title">Title</label>
-          <input id="title" name="title" type="text">
+          <input id="title" name="title" type="text" aria-describedby="title-error">
+          <p class="error-message" id="title-error"></p>
         </div>
 
         <div class="field">
           <label for="author">Author</label>
-          <input id="author" name="author" type="text">
+          <input id="author" name="author" type="text" aria-describedby="author-error">
+          <p class="error-message" id="author-error"></p>
         </div>
 
         <div class="field">
           <label for="pages">Pages</label>
-          <input id="pages" name="pages" type="text">
+          <input id="pages" name="pages" type="text" aria-describedby="pages-error">
+          <p class="error-message" id="pages-error"></p>
         </div>
 
         <div class="field">
           <label for="tag">Tag</label>
-          <input id="tag" name="tag" type="text">
+          <input id="tag" name="tag" type="text" aria-describedby="tag-error">
+          <p class="error-message" id="tag-error"></p>
         </div>
 
         <div class="field">
@@ -161,7 +166,7 @@
     </p>
   </footer>
 
-  <script src="scripts/app.js"></script>
+  <script type="module" src="scripts/app.js"></script>
 
 </body>
 </html>
