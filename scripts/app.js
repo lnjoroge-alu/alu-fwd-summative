@@ -7,7 +7,7 @@ import {
   checkDate,
   hasRepeatedWord,
 } from "./validators.js";
-import { getRecords, addRecord } from "./state.js";
+import { getRecords, addRecord, updateRecord, deleteRecord, toggleRead } from "./state.js";
 import { compileRegex, recordMatches, sortRecords } from "./search.js";
 import { renderRecords, renderStats } from "./ui.js";
 
@@ -158,6 +158,67 @@ function validateField(inputId, checkFunction) {
   }
 }
 
+//  Edit and delete a book 
+
+let editingId = null; // null = adding a new book; an id = editing that book
+const recordsBody = document.getElementById("records-body");
+const formHeading = document.getElementById("add-edit-heading");
+const saveButton = document.getElementById("save-btn");
+
+
+recordsBody.addEventListener("click", function (event) {
+  const button = event.target;
+  if (button.classList.contains("read-btn")) {
+    toggleRead(button.dataset.id);
+    refresh();
+    updateStats();
+  } else if (button.classList.contains("edit-btn")) {
+    startEdit(button.dataset.id);
+  } else if (button.classList.contains("delete-btn")) {
+    confirmDelete(button.dataset.id);
+  }
+});
+
+// Put a book's details into the form so the user can change them.
+function startEdit(id) {
+  const book = getRecords().find(function (b) {
+    return b.id === id;
+  });
+  if (!book) {
+    return;
+  }
+
+  document.getElementById("title").value = book.title;
+  document.getElementById("author").value = book.author;
+  document.getElementById("pages").value = book.pages;
+  document.getElementById("tag").value = book.tag;
+  document.getElementById("date-added").value = book.dateAdded;
+  document.getElementById("isbn").value = book.isbn;
+  document.getElementById("notes").value = book.notes;
+
+  editingId = id;
+  formHeading.textContent = "Edit book";
+  saveButton.textContent = "Save changes";
+
+  showSection("add-edit");
+  document.getElementById("title").focus();
+}
+
+function confirmDelete(id) {
+  const sure = window.confirm("Delete this book?");
+  if (sure) {
+    deleteRecord(id);
+    refresh();
+    updateStats();
+  }
+}
+
+function exitEditMode() {
+  editingId = null;
+  formHeading.textContent = "Add a book";
+  saveButton.textContent = "Save book";
+}
+
 form.addEventListener("submit", function (event) {
   event.preventDefault(); // stop the page from reloading
 
@@ -189,14 +250,22 @@ form.addEventListener("submit", function (event) {
     notes: document.getElementById("notes").value,
     dateAdded: document.getElementById("date-added").value,
   };
-  addRecord(book);
-  form.reset(); // clears the inputs (and the reset handler clears any errors)
-  updateStats(); // the new book changes the totals
-
-  if (hasRepeatedWord(book.title)) {
-    statusBox.textContent = "Book added. Tip: your title repeats a word.";
+  // Remember if we were editing before reset() clears editingId.
+  const editing = editingId;
+  if (editing) {
+    updateRecord(editing, book);
   } else {
-    statusBox.textContent = "Book added.";
+    addRecord(book);
+  }
+
+  form.reset(); // clears the inputs (and the reset handler exits edit mode)
+  updateStats(); // the change affects the totals
+
+  const action = editing ? "updated" : "added";
+  if (hasRepeatedWord(book.title)) {
+    statusBox.textContent = "Book " + action + ". Tip: your title repeats a word.";
+  } else {
+    statusBox.textContent = "Book " + action + ".";
   }
 
   refresh();
@@ -211,6 +280,7 @@ form.addEventListener("reset", function () {
   clearError("tag");
   clearError("date-added");
   statusBox.textContent = "";
+  exitEditMode(); // Cancel also leaves edit mode
 });
 
 //  Start 
