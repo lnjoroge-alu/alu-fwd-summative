@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tests - Book &amp; Notes Vault</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; padding: 16px; line-height: 1.5; }
+    #summary { font-weight: bold; font-size: 18px; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 2px 0; }
+    .pass { color: #1a7f37; }
+    .fail { color: #b00020; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Validator tests</h1>
+  <p id="summary"></p>
+  <ul id="results"></ul>
+
+  <!-- These tests load the same validators the form uses, and check them. -->
+  <script type="module">
+    import {
+      checkTitle,
+      checkAuthor,
+      checkPages,
+      checkTag,
+      checkDate,
+      hasRepeatedWord,
+    } from "./scripts/validators.js";
+
+    const results = document.getElementById("results");
+    let passCount = 0;
+    let total = 0;
+
+    // Small helper: check that "actual" equals "expected".
+    function assert(name, actual, expected) {
+      total = total + 1;
+      const ok = actual === expected;
+      if (ok) {
+        passCount = passCount + 1;
+      }
+      const li = document.createElement("li");
+      li.textContent = (ok ? "PASS: " : "FAIL: ") + name;
+      li.className = ok ? "pass" : "fail";
+      results.appendChild(li);
+    }
+
+    // ---- Title ----
+    assert("good title passes", checkTitle("Clean Code").ok, true);
+    assert("empty title fails", checkTitle("").ok, false);
+    assert("leading space title fails", checkTitle(" Clean Code").ok, false);
+    assert("trailing space title fails", checkTitle("Clean Code ").ok, false);
+
+    // ---- Pages ----
+    assert("whole number passes", checkPages("250").ok, true);
+    assert("zero fails", checkPages("0").ok, false);
+    assert("leading zero fails", checkPages("0250").ok, false);
+    assert("decimal fails", checkPages("25.5").ok, false);
+    assert("letters fail", checkPages("abc").ok, false);
+
+    // ---- Date ----
+    assert("good date passes", checkDate("2025-09-29").ok, true);
+    assert("bad month fails", checkDate("2025-13-01").ok, false);
+    assert("bad day fails", checkDate("2025-09-32").ok, false);
+    assert("wrong format fails", checkDate("29/09/2025").ok, false);
+
+    // ---- Author and tag ----
+    assert("good author passes", checkAuthor("Robert Martin").ok, true);
+    assert("hyphen author passes", checkAuthor("Mary-Jane Watson").ok, true);
+    assert("number in author fails", checkAuthor("Robert2").ok, false);
+    assert("good tag passes", checkTag("Programming").ok, true);
+
+    // ---- Advanced: repeated word ----
+    assert("repeated word is found", hasRepeatedWord("the the book"), true);
+    assert("no repeat returns false", hasRepeatedWord("the book"), false);
+
+    // ---- Summary ----
+    const summary = document.getElementById("summary");
+    summary.textContent = passCount + " / " + total + " tests passed";
+    summary.style.color = passCount === total ? "#1a7f37" : "#b00020";
+  </script>
+</body>
+</html>
