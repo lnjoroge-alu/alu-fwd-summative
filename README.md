@@ -40,8 +40,9 @@ address it prints.
 
 ## How to run the tests
 
-Open `tests.html` the same way (Live Server). It runs a set of small checks on the validator
-and search functions and prints **PASS/FAIL** for each, plus a total at the top.
+Open `tests.html` the same way (Live Server). It runs a set of small checks on the validator,
+search, sort and import-validation functions and prints **PASS/FAIL** for each, plus a total
+at the top.
 
 ---
 
