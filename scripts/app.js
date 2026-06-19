@@ -7,7 +7,22 @@ import {
   checkDate,
   hasRepeatedWord,
 } from "./validators.js";
-import { getRecords, addRecord, updateRecord, deleteRecord, toggleRead } from "./state.js";
+import {
+  getRecords,
+  setRecords,
+  addRecord,
+  updateRecord,
+  deleteRecord,
+  toggleRead,
+} from "./state.js";
+import {
+  saveRecords,
+  loadRecords,
+  saveSettings,
+  loadSettings,
+  validateData,
+  normalizeRecord,
+} from "./storage.js";
 import { compileRegex, recordMatches, sortRecords } from "./search.js";
 import { renderRecords, renderStats } from "./ui.js";
 
@@ -120,11 +135,44 @@ function updateSortIndicators() {
 const readingGoalInput = document.getElementById("reading-goal");
 
 // Read the goal number from Settings and redraw the dashboard.
+const readingSpeedInput = document.getElementById("reading-speed");
+const tagsListInput = document.getElementById("tags-list");
+const tagOptions = document.getElementById("tag-options");
+
+// Read the goal and speed from Settings and redraw the dashboard.
 function updateStats() {
-  renderStats(getRecords(), Number(readingGoalInput.value));
+  const goal = Number(readingGoalInput.value);
+  const speed = Number(readingSpeedInput.value);
+  renderStats(getRecords(), goal, speed);
 }
 
-readingGoalInput.addEventListener("input", updateStats);
+// Save the settings and redraw anything that depends on them.
+function onSettingsChange() {
+  saveSettings({
+    goal: readingGoalInput.value,
+    speed: readingSpeedInput.value,
+    tags: tagsListInput.value,
+  });
+  fillTagOptions();
+  updateStats();
+}
+
+readingGoalInput.addEventListener("input", onSettingsChange);
+readingSpeedInput.addEventListener("input", onSettingsChange);
+tagsListInput.addEventListener("input", onSettingsChange);
+
+function fillTagOptions() {
+  const tags = tagsListInput.value.split(",");
+  tagOptions.innerHTML = "";
+  tags.forEach(function (tag) {
+    const trimmed = tag.trim();
+    if (trimmed !== "") {
+      const option = document.createElement("option");
+      option.value = trimmed;
+      tagOptions.appendChild(option);
+    }
+  });
+}
 
 //  Form validation and adding a book 
 
@@ -170,6 +218,7 @@ recordsBody.addEventListener("click", function (event) {
   const button = event.target;
   if (button.classList.contains("read-btn")) {
     toggleRead(button.dataset.id);
+    saveRecords(getRecords());
     refresh();
     updateStats();
   } else if (button.classList.contains("edit-btn")) {
@@ -208,6 +257,7 @@ function confirmDelete(id) {
   const sure = window.confirm("Delete this book?");
   if (sure) {
     deleteRecord(id);
+    saveRecords(getRecords());
     refresh();
     updateStats();
   }
@@ -257,6 +307,7 @@ form.addEventListener("submit", function (event) {
   } else {
     addRecord(book);
   }
+  saveRecords(getRecords());
 
   form.reset(); // clears the inputs (and the reset handler exits edit mode)
   updateStats(); // the change affects the totals
@@ -283,7 +334,110 @@ form.addEventListener("reset", function () {
   exitEditMode(); // Cancel also leaves edit mode
 });
 
-//  Start 
-updateSortIndicators();
-refresh();
-updateStats();
+//  Import / Export 
+
+const exportButton = document.getElementById("export-btn");
+const importButton = document.getElementById("import-btn");
+const importFile = document.getElementById("import-file");
+const settingsMessage = document.getElementById("settings-msg");
+
+// Export: download all the books as a JSON file.
+exportButton.addEventListener("click", function () {
+  const text = JSON.stringify(getRecords(), null, 2);
+  const blob = new Blob([text], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "books.json";
+  link.click();
+  URL.revokeObjectURL(url);
+  settingsMessage.textContent = "Exported " + getRecords().length + " books.";
+});
+
+// Import: clicking the button opens the file picker.
+importButton.addEventListener("click", function () {
+  importFile.click();
+});
+
+// When a file is chosen, read it, check it, then load it.
+importFile.addEventListener("change", function () {
+  const file = importFile.files[0];
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function () {
+    let data;
+    try {
+      data = JSON.parse(reader.result);
+    } catch (error) {
+      settingsMessage.textContent = "That file is not valid JSON.";
+      return;
+    }
+
+    // Check the shape before replacing anything.
+    const check = validateData(data);
+    if (!check.ok) {
+      settingsMessage.textContent = check.message;
+      return;
+    }
+
+    data.forEach(normalizeRecord);
+    setRecords(data);
+    saveRecords(getRecords());
+    refresh();
+    updateStats();
+    settingsMessage.textContent = "Imported " + data.length + " books.";
+  };
+  reader.readAsText(file);
+  importFile.value = ""; // reset so the same file can be chosen again
+});
+
+// ---------- Start ----------
+
+// Load the saved books, or the seed file the first time the app is opened.
+async function start() {
+  const saved = loadRecords();
+  if (saved) {
+    setRecords(saved);
+  } else {
+    setRecords(await loadSeed());
+    saveRecords(getRecords());
+  }
+
+  loadSavedSettings();
+  fillTagOptions();
+  updateSortIndicators();
+  refresh();
+  updateStats();
+}
+
+// Get the starter books from seed.json (empty list if it cannot be loaded).
+async function loadSeed() {
+  try {
+    const response = await fetch("seed.json");
+    return await response.json();
+  } catch (error) {
+    return [];
+  }
+}
+
+// Put any saved settings back into the Settings inputs.
+function loadSavedSettings() {
+  const settings = loadSettings();
+  if (!settings) {
+    return;
+  }
+  if (settings.goal !== undefined) {
+    readingGoalInput.value = settings.goal;
+  }
+  if (settings.speed !== undefined) {
+    readingSpeedInput.value = settings.speed;
+  }
+  if (settings.tags !== undefined) {
+    tagsListInput.value = settings.tags;
+  }
+}
+
+start();
