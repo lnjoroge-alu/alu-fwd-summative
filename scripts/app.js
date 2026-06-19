@@ -40,6 +40,18 @@ tabs.forEach(function (tab) {
   });
 });
 
+// ---------- Search and sort settings ----------
+// These remember what the user has chosen, and refresh() redraws the list.
+
+let sortKey = "dateAdded";
+let sortDirection = "desc"; // newest first to start
+let searchText = "";
+let ignoreCase = true;
+
+const searchInput = document.getElementById("search-input");
+const ignoreCaseBox = document.getElementById("ignore-case");
+const searchMessage = document.getElementById("search-msg");
+const sortButtons = document.querySelectorAll(".sort-btn");
 
 
 // ---------- Form validation and adding a book ----------
