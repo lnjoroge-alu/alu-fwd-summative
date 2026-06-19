@@ -7,13 +7,15 @@ import {
   checkDate,
   hasRepeatedWord,
 } from "./validators.js";
+import { getRecords, addRecord } from "./state.js";
+import { compileRegex, recordMatches, sortRecords } from "./search.js";
+import { renderRecords } from "./ui.js";
 
 // ---------- Tabs ----------
 
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll("main > section");
 
-// Show one section, hide the rest, and highlight the matching tab.
 function showSection(targetId) {
   sections.forEach(function (section) {
     if (section.id === targetId) {
@@ -38,12 +40,13 @@ tabs.forEach(function (tab) {
   });
 });
 
-// ---------- Form validation ----------
+
+
+// ---------- Form validation and adding a book ----------
 
 const form = document.getElementById("book-form");
 const statusBox = document.getElementById("form-status");
 
-// Put an error message under a field and mark the input as invalid.
 function showError(inputId, message) {
   const input = document.getElementById(inputId);
   const errorBox = document.getElementById(inputId + "-error");
@@ -51,7 +54,6 @@ function showError(inputId, message) {
   errorBox.textContent = message;
 }
 
-// Remove the error for a field.
 function clearError(inputId) {
   const input = document.getElementById(inputId);
   const errorBox = document.getElementById(inputId + "-error");
@@ -59,8 +61,6 @@ function clearError(inputId) {
   errorBox.textContent = "";
 }
 
-
-// Check one field using its check function. Returns true if it is ok.
 function validateField(inputId, checkFunction) {
   const value = document.getElementById(inputId).value;
   const result = checkFunction(value);
@@ -88,7 +88,6 @@ form.addEventListener("submit", function (event) {
 
   if (!allOk) {
     statusBox.textContent = "Please fix the highlighted fields.";
-    // Move focus to the first field that has an error.
     const firstInvalid = form.querySelector('[aria-invalid="true"]');
     if (firstInvalid) {
       firstInvalid.focus();
@@ -96,16 +95,30 @@ form.addEventListener("submit", function (event) {
     return;
   }
 
-  //  the advanced regex: did the title repeat a word?
-  const titleValue = document.getElementById("title").value;
-  if (hasRepeatedWord(titleValue)) {
-    statusBox.textContent = "Looks good. Tip: your title repeats a word.";
+  // All valid: build the book and add it to the list.
+  const book = {
+    title: document.getElementById("title").value,
+    author: document.getElementById("author").value,
+    pages: Number(document.getElementById("pages").value),
+    tag: document.getElementById("tag").value,
+    isbn: document.getElementById("isbn").value,
+    notes: document.getElementById("notes").value,
+    dateAdded: document.getElementById("date-added").value,
+  };
+  addRecord(book);
+  form.reset(); // clears the inputs (and the reset handler clears any errors)
+
+  if (hasRepeatedWord(book.title)) {
+    statusBox.textContent = "Book added. Tip: your title repeats a word.";
   } else {
-    statusBox.textContent = "All fields look good!";
+    statusBox.textContent = "Book added.";
   }
+
+  refresh();
+  showSection("records"); 
 });
 
-// When the Cancel/reset button is pressed, clear the errors and the message.
+// Cancel/reset clears the errors and the message.
 form.addEventListener("reset", function () {
   clearError("title");
   clearError("author");
@@ -114,3 +127,7 @@ form.addEventListener("reset", function () {
   clearError("date-added");
   statusBox.textContent = "";
 });
+
+// ---------- Start ----------
+updateSortIndicators();
+refresh();
