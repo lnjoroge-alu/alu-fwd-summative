@@ -1,65 +1,49 @@
+// state.js
+// The data is loaded from the browser (or seed.json) by app.js at the start.
 
+let records = [];
 
-let records = [
-  {
-    id: "bnv_0001",
-    title: "Clean Code",
-    author: "Robert Martin",
-    pages: 464,
-    tag: "Programming",
-    isbn: "978-0132350884",
-    notes: "",
-    dateAdded: "2025-09-20",
-    createdAt: "2025-09-20T09:00:00.000Z",
-    updatedAt: "2025-09-20T09:00:00.000Z",
-  },
-  {
-    id: "bnv_0002",
-    title: "Atomic Habits",
-    author: "James Clear",
-    pages: 320,
-    tag: "Self Help",
-    isbn: "",
-    notes: "",
-    dateAdded: "2025-09-25",
-    createdAt: "2025-09-25T09:00:00.000Z",
-    updatedAt: "2025-09-25T09:00:00.000Z",
-  },
-  {
-    id: "bnv_0003",
-    title: "The Hobbit",
-    author: "John Tolkien",
-    pages: 310,
-    tag: "Fiction",
-    isbn: "",
-    notes: "",
-    dateAdded: "2025-09-28",
-    createdAt: "2025-09-28T09:00:00.000Z",
-    updatedAt: "2025-09-28T09:00:00.000Z",
-  },
-];
-
-// Counts up so each new book gets a different id (sample data uses up to 3).
-let lastNumber = records.length;
-
-// Give back the whole list.
 export function getRecords() {
   return records;
 }
 
-// Make the next id, like "bnv_0004".
-export function makeId() {
-  lastNumber = lastNumber + 1;
-  return "bnv_" + String(lastNumber).padStart(4, "0");
+// Replace the whole list 
+export function setRecords(newList) {
+  records = newList;
 }
 
-// Add a new book. It fills in the id and the timestamps.
+// Make the next id, like "bnv_0004", based on the highest id already used.
+export function makeId() {
+  let max = 0;
+  records.forEach(function (book) {
+    const number = Number(String(book.id).replace("bnv_", ""));
+    if (number > max) {
+      max = number;
+    }
+  });
+  return "bnv_" + String(max + 1).padStart(4, "0");
+}
+
+// Add a new book
 export function addRecord(book) {
   const now = new Date().toISOString();
   book.id = makeId();
   book.createdAt = now;
   book.updatedAt = now;
+  if (book.read === undefined) {
+    book.read = false;
+  }
   records.push(book);
+}
+
+// Flip a book between read and unread.
+export function toggleRead(id) {
+  records.forEach(function (book) {
+    if (book.id === id) {
+      book.read = !book.read;
+      book.updatedAt = new Date().toISOString();
+    }
+  });
 }
 
 // Change an existing book by its id.

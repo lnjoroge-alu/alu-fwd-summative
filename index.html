@@ -52,7 +52,7 @@
           <p class="stat-value" id="stat-total">0</p>
         </div>
         <div class="stat-card">
-          <h3>Total pages</h3>
+          <h3>Pages read</h3>
           <p class="stat-value" id="stat-pages">0</p>
         </div>
         <div class="stat-card">
@@ -63,6 +63,7 @@
 
       <h3>Reading goal</h3>
       <p id="goal-message" aria-live="polite">Set a reading goal in Settings.</p>
+      <p id="reading-estimate" aria-live="polite"></p>
 
       <h3>Last 7 days</h3>
       <div class="chart" id="chart"></div>
@@ -89,6 +90,8 @@
             <th aria-sort="none"><button type="button" class="sort-btn" data-key="pages">Pages</button></th>
             <th>Tag</th>
             <th aria-sort="none"><button type="button" class="sort-btn" data-key="dateAdded">Date</button></th>
+            <th>Notes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="records-body"></tbody>
@@ -121,7 +124,8 @@
 
         <div class="field">
           <label for="tag">Tag</label>
-          <input id="tag" name="tag" type="text" aria-describedby="tag-error">
+          <input id="tag" name="tag" type="text" aria-describedby="tag-error" list="tag-options">
+          <datalist id="tag-options"></datalist>
           <p class="error-message" id="tag-error"></p>
         </div>
 
@@ -142,7 +146,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Save book</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save book</button>
           <button type="reset" class="btn">Cancel</button>
         </div>
       </form>
@@ -167,9 +171,11 @@
 
       <h3>Data</h3>
       <div class="form-actions">
-        <button type="button" class="btn">Export JSON</button>
-        <button type="button" class="btn">Import JSON</button>
+        <button type="button" class="btn" id="export-btn">Export JSON</button>
+        <button type="button" class="btn" id="import-btn">Import JSON</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
       </div>
+      <p id="settings-msg" aria-live="polite"></p>
       </section>
 
   </main>
