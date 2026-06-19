@@ -58,7 +58,7 @@ function actionsCell(book) {
 //  Dashboard stats 
 
 // Update all the dashboard numbers, the chart, and the reading-goal message.
-export function renderStats(records, goal) {
+export function renderStats(records, goal, speed) {
   // total books
   document.getElementById("stat-total").textContent = records.length;
 
@@ -79,6 +79,9 @@ export function renderStats(records, goal) {
 
   // reading goal message
   renderGoal(pagesRead, goal);
+
+  // estimated time to read the unread books (pages -> time conversion)
+  renderEstimate(records, speed);
 }
 
 // Find the tag that is used the most.
@@ -184,4 +187,30 @@ function renderGoal(pagesRead, goal) {
     goalMessage.textContent =
       "You have read " + pagesRead + " pages - " + over + " over your goal of " + goal + "!";
   }
+}
+
+// Estimate how long the unread books will take, using the reading speed.
+// This is the units conversion for the Vault: pages -> minutes -> hours + minutes.
+function renderEstimate(records, speed) {
+  const estimate = document.getElementById("reading-estimate");
+
+  // add up the pages of the books not read yet
+  let unreadPages = 0;
+  records.forEach(function (book) {
+    if (!book.read) {
+      unreadPages = unreadPages + book.pages;
+    }
+  });
+
+  if (!speed || speed <= 0) {
+    estimate.textContent = "";
+    return;
+  }
+
+  const totalMinutes = Math.round(unreadPages / speed);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  estimate.textContent =
+    "At " + speed + " pages/min, your unread books will take about " +
+    hours + "h " + minutes + "m.";
 }
