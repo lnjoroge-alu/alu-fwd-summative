@@ -37,7 +37,7 @@ export function renderRecords(list, re) {
   });
 }
 
-// Build one table cell. The data-label is used by the CSS to make cards on mobile.
+// Build one table cell. The data-label is what the CSS
 function cell(label, value, re) {
   return '<td data-label="' + label + '">' + highlight(value, re) + "</td>";
 }
@@ -194,21 +194,25 @@ function toDateString(d) {
 // Show how far the reader is from their goal, and the time left to reach it.
 function renderGoal(pagesRead, goal, speed) {
   const goalMessage = document.getElementById("goal-message");
-  const goalProgress = document.getElementById("goal-progress");
+  const goalBar = document.getElementById("goal-bar");
+  const goalFill = document.getElementById("goal-bar-fill");
   const estimate = document.getElementById("reading-estimate");
 
   if (!goal || goal <= 0) {
-    goalProgress.hidden = true;
+    goalBar.hidden = true;
     estimate.textContent = "";
     goalMessage.setAttribute("aria-live", "polite");
     goalMessage.textContent = "Set a reading goal in Settings.";
     return;
   }
 
-  // the bar fills up as more pages are read
-  goalProgress.hidden = false;
-  goalProgress.max = goal;
-  goalProgress.value = pagesRead;
+  // fill the bar to show how much of the goal is done (max 100%)
+  goalBar.hidden = false;
+  let percent = (pagesRead / goal) * 100;
+  if (percent > 100) {
+    percent = 100;
+  }
+  goalFill.style.width = percent + "%";
 
   if (pagesRead <= goal) {
     const left = goal - pagesRead;

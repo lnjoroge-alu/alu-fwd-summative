@@ -71,7 +71,9 @@
       </div>
 
       <h3>Reading goal</h3>
-      <progress id="goal-progress" class="goal-progress" max="100" value="0" hidden></progress>
+      <div class="goal-bar" id="goal-bar" aria-hidden="true" hidden>
+        <div class="goal-bar-fill" id="goal-bar-fill"></div>
+      </div>
       <div class="goal-line">
         <p id="goal-message" aria-live="polite">Set a reading goal in Settings.</p>
         <p id="reading-estimate" aria-live="polite"></p>
@@ -95,6 +97,7 @@
         <span id="search-msg" class="search-msg" aria-live="polite"></span>
       </div>
 
+      <div class="table-wrap">
       <table class="records-table" id="records-table">
         <thead>
           <tr>
@@ -109,6 +112,7 @@
         </thead>
         <tbody id="records-body"></tbody>
       </table>
+      </div>
 
       <p class="empty-message" id="empty-message" hidden>No books yet. Add one from the Add / Edit tab.</p>
       </section>
