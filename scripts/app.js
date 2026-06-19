@@ -89,7 +89,6 @@ ignoreCaseBox.addEventListener("change", function () {
   refresh();
 });
 
-// Click a column header -> sort by it. Click again -> flip the direction.
 sortButtons.forEach(function (button) {
   button.addEventListener("click", function () {
     const key = button.dataset.key;
