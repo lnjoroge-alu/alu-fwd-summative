@@ -8,8 +8,8 @@
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 12px 16px;
   background: #ffffff;
   border-bottom: 1px solid #d6d6dc;
 }
@@ -64,6 +64,13 @@ main {
 
   .stat-card {
     flex: 1;
+  }
+
+  /* center the nav tabs on wider screens, with a bit more room */
+  .tabs {
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 24px;
   }
 }
 

@@ -111,7 +111,6 @@ function topTag(records) {
   return best;
 }
 
-// Draw one bar for each of the last 7 days, sized by how many books were added.
 function renderChart(records) {
   const chart = document.getElementById("chart");
   chart.innerHTML = "";
@@ -122,7 +121,8 @@ function renderChart(records) {
   const counts = days.map(function (day) {
     let count = 0;
     records.forEach(function (book) {
-      if (book.dateAdded === day.dateStr) {
+      
+      if (toDateString(new Date(book.updatedAt)) === day.dateStr) {
         count = count + 1;
       }
     });
@@ -138,11 +138,26 @@ function renderChart(records) {
   });
 
   days.forEach(function (day, i) {
+    // Each column has a bar on top and the day letter underneath.
+    const column = document.createElement("div");
+    column.className = "chart-col";
+
+    const barArea = document.createElement("div");
+    barArea.className = "bar-area";
+
     const bar = document.createElement("div");
     bar.className = "bar";
     bar.style.height = (counts[i] / max) * 100 + "%";
     bar.title = day.dateStr + ": " + counts[i] + " book(s)";
-    chart.appendChild(bar);
+    barArea.appendChild(bar);
+
+    const label = document.createElement("div");
+    label.className = "chart-label";
+    label.textContent = day.label;
+
+    column.appendChild(barArea);
+    column.appendChild(label);
+    chart.appendChild(column);
   });
 }
 
@@ -150,10 +165,11 @@ function renderChart(records) {
 function lastSevenDays() {
   const days = [];
   const today = new Date();
+  const letters = ["S", "M", "T", "W", "T", "F", "S"]; // day-of-week first letters
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    days.push({ dateStr: toDateString(d) });
+    days.push({ dateStr: toDateString(d), label: letters[d.getDay()] });
   }
   return days;
 }
@@ -169,12 +185,19 @@ function toDateString(d) {
 // Show how far the reader is from their goal. 
 function renderGoal(pagesRead, goal) {
   const goalMessage = document.getElementById("goal-message");
+  const goalProgress = document.getElementById("goal-progress");
 
   if (!goal || goal <= 0) {
+    goalProgress.hidden = true;
     goalMessage.setAttribute("aria-live", "polite");
     goalMessage.textContent = "Set a reading goal in Settings.";
     return;
   }
+
+  // Show progress as a bar (it fills up as more pages are read).
+  goalProgress.hidden = false;
+  goalProgress.max = goal;
+  goalProgress.value = pagesRead;
 
   if (pagesRead <= goal) {
     const left = goal - pagesRead;
