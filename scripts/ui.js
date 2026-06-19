@@ -123,3 +123,43 @@ function renderChart(records) {
   });
 }
 
+// Build a list of the last 7 days (oldest first), each as a YYYY-MM-DD string.
+function lastSevenDays() {
+  const days = [];
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push({ dateStr: toDateString(d) });
+  }
+  return days;
+}
+
+// Turn a Date into a "YYYY-MM-DD" string.
+function toDateString(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return year + "-" + month + "-" + day;
+}
+
+// Show how far the reader is from their goal. 
+function renderGoal(totalPages, goal) {
+  const goalMessage = document.getElementById("goal-message");
+
+  if (!goal || goal <= 0) {
+    goalMessage.setAttribute("aria-live", "polite");
+    goalMessage.textContent = "Set a reading goal in Settings.";
+    return;
+  }
+
+  if (totalPages <= goal) {
+    const left = goal - totalPages;
+    goalMessage.setAttribute("aria-live", "polite");
+    goalMessage.textContent = left + " pages to go to reach your goal of " + goal + ".";
+  } else {
+    const over = totalPages - goal;
+    goalMessage.setAttribute("aria-live", "assertive");
+    goalMessage.textContent = "You are " + over + " pages over your goal of " + goal + "!";
+  }
+}
