@@ -28,7 +28,14 @@
       checkDate,
       hasRepeatedWord,
     } from "./scripts/validators.js";
-    import { compileRegex, highlight, escapeHtml } from "./scripts/search.js";
+    import {
+      compileRegex,
+      highlight,
+      escapeHtml,
+      recordMatches,
+      sortRecords,
+    } from "./scripts/search.js";
+    import { validateData, normalizeRecord } from "./scripts/storage.js";
 
     const results = document.getElementById("results");
     let passCount = 0;
@@ -90,7 +97,35 @@
       true
     );
 
-    //  Summary 
+    //  Search: filtering and sorting
+    const sampleBooks = [
+      { title: "Clean Code", author: "Robert Martin", pages: 464, tag: "Programming", dateAdded: "2025-09-20", notes: "" },
+      { title: "Atomic Habits", author: "James Clear", pages: 320, tag: "Self Help", dateAdded: "2025-09-25", notes: "great tips" },
+      { title: "The Hobbit", author: "John Tolkien", pages: 310, tag: "Fiction", dateAdded: "2025-09-28", notes: "" },
+    ];
+
+    assert("match found in title", recordMatches(sampleBooks[0], compileRegex("clean", true)), true);
+    assert("match found in notes", recordMatches(sampleBooks[1], compileRegex("tips", true)), true);
+    assert("no match returns false", recordMatches(sampleBooks[2], compileRegex("zzz", true)), false);
+    assert("null pattern matches all", recordMatches(sampleBooks[0], null), true);
+
+    assert("sort by title puts Atomic first", sortRecords(sampleBooks, "title", "asc")[0].title, "Atomic Habits");
+    assert("sort by pages desc puts 464 first", sortRecords(sampleBooks, "pages", "desc")[0].pages, 464);
+    assert("sort by date asc puts oldest first", sortRecords(sampleBooks, "dateAdded", "asc")[0].dateAdded, "2025-09-20");
+
+    //  Import validation
+    assert("valid list passes", validateData([{ title: "T", author: "A", pages: 5, tag: "X", dateAdded: "2025-01-01" }]).ok, true);
+    assert("not a list fails", validateData({}).ok, false);
+    assert("missing title fails", validateData([{ author: "A", pages: 5, tag: "X", dateAdded: "2025-01-01" }]).ok, false);
+    assert("text pages fails", validateData([{ title: "T", author: "A", pages: "5", tag: "X", dateAdded: "2025-01-01" }]).ok, false);
+
+    //  Normalize fills optional fields
+    const filled = normalizeRecord({ title: "T", author: "A", pages: 5, tag: "X", dateAdded: "2025-01-01" });
+    assert("normalize sets read to false", filled.read, false);
+    assert("normalize sets isbn to empty", filled.isbn, "");
+    assert("normalize sets notes to empty", filled.notes, "");
+
+    //  Summary
     const summary = document.getElementById("summary");
     summary.textContent = passCount + " / " + total + " tests passed";
     summary.style.color = passCount === total ? "#1a7f37" : "#b00020";
