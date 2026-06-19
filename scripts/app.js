@@ -260,6 +260,7 @@ function confirmDelete(id) {
     saveRecords(getRecords());
     refresh();
     updateStats();
+    focusRecordsHeading(); // keep focus sensible after the row is gone
   }
 }
 
@@ -267,6 +268,13 @@ function exitEditMode() {
   editingId = null;
   formHeading.textContent = "Add a book";
   saveButton.textContent = "Save book";
+}
+
+// Put keyboard focus on the Records heading. Used after adding or deleting,
+function focusRecordsHeading() {
+  const heading = document.getElementById("records-heading");
+  heading.setAttribute("tabindex", "-1");
+  heading.focus();
 }
 
 form.addEventListener("submit", function (event) {
@@ -320,7 +328,8 @@ form.addEventListener("submit", function (event) {
   }
 
   refresh();
-  showSection("records"); 
+  showSection("records");
+  focusRecordsHeading(); // move focus to the list after adding 
 });
 
 // Cancel/reset clears the errors and the message.
