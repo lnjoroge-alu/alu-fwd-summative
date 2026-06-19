@@ -1,4 +1,19 @@
-/* base.css - colours, fonts */
+/* base.css - colours and fonts */
+
+:root {
+  --bg: #ece4d6;
+  --card: #fbf7ef;
+  --card2: #f4ecdd;
+  --ink: #241f18;
+  --muted: #766a58;
+  --line: #e0d6c4;
+  --line2: #cdbfa6;
+  --accent: #8c2f2a;
+  --accent2: #a8504b;
+  --soft: #f0e0db;
+  --green: #3f6b4f;
+  --green-soft: #e1ebe1;
+}
 
 * {
   box-sizing: border-box;
@@ -9,38 +24,47 @@ body, h1, h2, h3, p, ul {
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, Arial, sans-serif;
   line-height: 1.5;
-  color: #1d1d1f;
-  background-color: #f4f4f6;
+  color: var(--ink);
+  background: var(--bg);
+  /* full height so the footer sits at the bottom */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-h1 { font-size: 24px; }
-h2 { font-size: 20px; }
+/* headings use the serif font */
+h1, h2, h3, .stat-value {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+}
+
+h1 { font-size: 20px; }
+h2 { font-size: 26px; }
 h3 { font-size: 16px; }
 
 a {
-  color: #2b5fd9;
+  color: var(--accent);
 }
 
 ul {
   padding-left: 20px;
 }
 
-/* Show where the keyboard focus is  for accessibility */
 :focus {
-  outline: 3px solid #1a3fa0;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Skip link - hidden off screen until it is focused */
+/* skip link hides off screen until focused */
 .skip-link {
   position: absolute;
   left: -999px;
-  background: #2b5fd9;
-  color: #ffffff;
+  background: var(--accent);
+  color: #fff;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .skip-link:focus {
@@ -48,36 +72,21 @@ ul {
   top: 8px;
 }
 
-/* A gentle fade when a section is opened, */
+/* small fade when a section opens */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .panel {
   animation: fadeIn 0.2s ease;
 }
 
-.btn,
-.tab,
-.row-btn {
-  transition: background-color 0.15s ease;
+.btn, .tab, .row-btn {
+  transition: background 0.15s, color 0.15s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel {
-    animation: none;
-  }
-
-  .btn,
-  .tab,
-  .row-btn {
-    transition: none;
-  }
+  .panel { animation: none; }
+  .btn, .tab, .row-btn { transition: none; }
 }

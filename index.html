@@ -17,7 +17,16 @@
 
   
   <header class="app-header">
-    <h1>Book &amp; Notes Vault</h1>
+    <span class="brand-icon" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    </span>
+    <div>
+      <h1>Book &amp; Notes Vault</h1>
+      <p class="brand-sub">YOUR PERSONAL READING JOURNAL</p>
+    </div>
   </header>
 
   <!-- Tabs: each button shows one section -->
@@ -62,10 +71,16 @@
       </div>
 
       <h3>Reading goal</h3>
-      <p id="goal-message" aria-live="polite">Set a reading goal in Settings.</p>
-      <p id="reading-estimate" aria-live="polite"></p>
+      <div class="goal-bar" id="goal-bar" aria-hidden="true" hidden>
+        <div class="goal-bar-fill" id="goal-bar-fill"></div>
+      </div>
+      <div class="goal-line">
+        <p id="goal-message" aria-live="polite">Set a reading goal in Settings.</p>
+        <p id="reading-estimate" aria-live="polite"></p>
+      </div>
+      <p id="books-estimate" aria-live="polite"></p>
 
-      <h3>Last 7 days</h3>
+      <h3>Recent activity (last 7 days)</h3>
       <div class="chart" id="chart"></div>
       </section>
 
@@ -82,6 +97,7 @@
         <span id="search-msg" class="search-msg" aria-live="polite"></span>
       </div>
 
+      <div class="table-wrap">
       <table class="records-table" id="records-table">
         <thead>
           <tr>
@@ -96,6 +112,7 @@
         </thead>
         <tbody id="records-body"></tbody>
       </table>
+      </div>
 
       <p class="empty-message" id="empty-message" hidden>No books yet. Add one from the Add / Edit tab.</p>
       </section>
@@ -104,7 +121,7 @@
       <h2 id="add-edit-heading">Add a book</h2>
       <output id="form-status" class="form-status" aria-live="polite"></output>
        <form id="book-form" class="book-form">
-        <div class="field">
+        <div class="field wide">
           <label for="title">Title</label>
           <input id="title" name="title" type="text" aria-describedby="title-error">
           <p class="error-message" id="title-error"></p>
@@ -135,12 +152,12 @@
           <p class="error-message" id="date-added-error"></p>
         </div>
 
-        <div class="field">
+        <div class="field wide">
           <label for="isbn">ISBN <span class="optional">(optional)</span></label>
           <input id="isbn" name="isbn" type="text">
         </div>
 
-        <div class="field">
+        <div class="field wide">
           <label for="notes">Notes <span class="optional">(optional)</span></label>
           <textarea id="notes" name="notes" rows="3"></textarea>
         </div>

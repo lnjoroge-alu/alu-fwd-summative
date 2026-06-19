@@ -29,7 +29,7 @@ export function renderRecords(list, re) {
       cell("Title", book.title, re) +
       cell("Author", book.author, re) +
       cell("Pages", String(book.pages), re) +
-      cell("Tag", book.tag, re) +
+      tagCell(book.tag, re) +
       cell("Date", book.dateAdded, re) +
       cell("Notes", book.notes, re) +
       actionsCell(book);
@@ -37,9 +37,14 @@ export function renderRecords(list, re) {
   });
 }
 
-// Build one table cell. The data-label is used by the CSS to make cards on mobile.
+// Build one table cell. The data-label is what the CSS
 function cell(label, value, re) {
   return '<td data-label="' + label + '">' + highlight(value, re) + "</td>";
+}
+
+// tag shown as a small pill
+function tagCell(value, re) {
+  return '<td data-label="Tag"><span class="chip">' + highlight(value, re) + "</span></td>";
 }
 
 // Build the cell with the Edit and Delete buttons. The id is stored on each
@@ -77,11 +82,11 @@ export function renderStats(records, goal, speed) {
   // last 7 days chart
   renderChart(records);
 
-  // reading goal message
-  renderGoal(pagesRead, goal);
+  // reading goal message + time to reach the goal (uses the reading speed)
+  renderGoal(pagesRead, goal, speed);
 
-  // estimated time to read the unread books (pages -> time conversion)
-  renderEstimate(records, speed);
+  // time to finish all the unread books
+  renderBooksEstimate(records, speed);
 }
 
 // Find the tag that is used the most.
@@ -111,7 +116,6 @@ function topTag(records) {
   return best;
 }
 
-// Draw one bar for each of the last 7 days, sized by how many books were added.
 function renderChart(records) {
   const chart = document.getElementById("chart");
   chart.innerHTML = "";
@@ -122,7 +126,8 @@ function renderChart(records) {
   const counts = days.map(function (day) {
     let count = 0;
     records.forEach(function (book) {
-      if (book.dateAdded === day.dateStr) {
+      
+      if (toDateString(new Date(book.updatedAt)) === day.dateStr) {
         count = count + 1;
       }
     });
@@ -137,23 +142,43 @@ function renderChart(records) {
     }
   });
 
+
+  const plot = document.createElement("div");
+  plot.className = "chart-plot";
+
+  const labels = document.createElement("div");
+  labels.className = "chart-labels";
+
   days.forEach(function (day, i) {
+    const column = document.createElement("div");
+    column.className = "chart-col";
+
     const bar = document.createElement("div");
     bar.className = "bar";
     bar.style.height = (counts[i] / max) * 100 + "%";
     bar.title = day.dateStr + ": " + counts[i] + " book(s)";
-    chart.appendChild(bar);
+    column.appendChild(bar);
+    plot.appendChild(column);
+
+    const label = document.createElement("div");
+    label.className = "chart-label";
+    label.textContent = day.label;
+    labels.appendChild(label);
   });
+
+  chart.appendChild(plot);
+  chart.appendChild(labels);
 }
 
 // Build a list of the last 7 days (oldest first), each as a YYYY-MM-DD string.
 function lastSevenDays() {
   const days = [];
   const today = new Date();
+  const letters = ["S", "M", "T", "W", "T", "F", "S"]; // day-of-week first letters
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    days.push({ dateStr: toDateString(d) });
+    days.push({ dateStr: toDateString(d), label: letters[d.getDay()] });
   }
   return days;
 }
@@ -166,35 +191,66 @@ function toDateString(d) {
   return year + "-" + month + "-" + day;
 }
 
-// Show how far the reader is from their goal. 
-function renderGoal(pagesRead, goal) {
+// Show how far the reader is from their goal, and the time left to reach it.
+function renderGoal(pagesRead, goal, speed) {
   const goalMessage = document.getElementById("goal-message");
+  const goalBar = document.getElementById("goal-bar");
+  const goalFill = document.getElementById("goal-bar-fill");
+  const estimate = document.getElementById("reading-estimate");
 
   if (!goal || goal <= 0) {
+    goalBar.hidden = true;
+    estimate.textContent = "";
     goalMessage.setAttribute("aria-live", "polite");
     goalMessage.textContent = "Set a reading goal in Settings.";
     return;
   }
 
+  // fill the bar to show how much of the goal is done (max 100%)
+  goalBar.hidden = false;
+  let percent = (pagesRead / goal) * 100;
+  if (percent > 100) {
+    percent = 100;
+  }
+  goalFill.style.width = percent + "%";
+
   if (pagesRead <= goal) {
     const left = goal - pagesRead;
     goalMessage.setAttribute("aria-live", "polite");
-    goalMessage.textContent =
-      "You have read " + pagesRead + " of " + goal + " pages. " + left + " to go.";
+    goalMessage.innerHTML =
+      "You have read " + valued(pagesRead) + " of " + valued(goal) +
+      " pages. " + valued(left) + " to go.";
+    estimate.innerHTML = "About " + valued(timeFor(left, speed)) + " of reading to reach your goal.";
   } else {
     const over = pagesRead - goal;
     goalMessage.setAttribute("aria-live", "assertive");
-    goalMessage.textContent =
-      "You have read " + pagesRead + " pages - " + over + " over your goal of " + goal + "!";
+    goalMessage.innerHTML =
+      "You have read " + valued(pagesRead) + " pages - " + valued(over) +
+      " over your goal of " + valued(goal) + "!";
+    estimate.textContent = "Goal reached!";
   }
 }
 
-// Estimate how long the unread books will take, using the reading speed.
-// This is the units conversion for the Vault: pages -> minutes -> hours + minutes.
-function renderEstimate(records, speed) {
-  const estimate = document.getElementById("reading-estimate");
+// wrap a value so it stands out on the page
+function valued(text) {
+  return '<span class="val">' + text + "</span>";
+}
 
-  // add up the pages of the books not read yet
+// turn a number of pages into a reading time, using the speed (pages per minute)
+function timeFor(pages, speed) {
+  if (!speed || speed <= 0) {
+    return "unknown time";
+  }
+  const totalMinutes = Math.round(pages / speed);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours + "h " + minutes + "m";
+}
+
+// time to finish all the books that are not read yet
+function renderBooksEstimate(records, speed) {
+  const estimate = document.getElementById("books-estimate");
+
   let unreadPages = 0;
   records.forEach(function (book) {
     if (!book.read) {
@@ -202,15 +258,11 @@ function renderEstimate(records, speed) {
     }
   });
 
-  if (!speed || speed <= 0) {
-    estimate.textContent = "";
+  if (unreadPages === 0) {
+    estimate.textContent = "All your books are read!";
     return;
   }
 
-  const totalMinutes = Math.round(unreadPages / speed);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  estimate.textContent =
-    "At " + speed + " pages/min, your unread books will take about " +
-    hours + "h " + minutes + "m.";
+  estimate.innerHTML =
+    "Time to finish all your books: " + valued(timeFor(unreadPages, speed)) + ".";
 }
