@@ -17,7 +17,8 @@ export function recordMatches(book, re) {
     return true; // if the regex is not valid, show all records (but show a message in the UI)
   }
   const haystack =
-    book.title + " " + book.author + " " + book.pages + " " + book.tag + " " + book.dateAdded;
+    book.title + " " + book.author + " " + book.pages + " " + book.tag + " " +
+    book.dateAdded + " " + book.notes;
   return haystack.search(re) !== -1;
 }
 
