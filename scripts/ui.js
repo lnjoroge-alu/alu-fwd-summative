@@ -36,3 +36,27 @@ export function renderRecords(list, re) {
 function cell(label, value, re) {
   return '<td data-label="' + label + '">' + highlight(value, re) + "</td>";
 }
+
+//  Dashboard stats 
+
+// Update all the dashboard numbers, the chart, and the reading-goal message.
+export function renderStats(records, goal) {
+  // total books
+  document.getElementById("stat-total").textContent = records.length;
+
+  // total pages 
+  let totalPages = 0;
+  records.forEach(function (book) {
+    totalPages = totalPages + book.pages;
+  });
+  document.getElementById("stat-pages").textContent = totalPages;
+
+  // top tag
+  document.getElementById("stat-top-tag").textContent = topTag(records);
+
+  // last 7 days chart
+  renderChart(records);
+
+  // reading goal message
+  renderGoal(totalPages, goal);
+}
