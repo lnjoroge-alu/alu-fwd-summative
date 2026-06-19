@@ -54,3 +54,26 @@ main {
   color: #5a5a60;
   border-top: 1px solid #d6d6dc;
 }
+
+
+/* TABLET: 768px and up */
+@media (min-width: 768px) {
+  .stat-cards {
+    flex-direction: row;
+  }
+
+  .stat-card {
+    flex: 1;
+  }
+}
+
+/* LAPTOP: 1024px and up */
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  main {
+    padding: 24px;
+  }
+}
