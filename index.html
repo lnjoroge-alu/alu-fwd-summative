@@ -62,7 +62,7 @@
       </div>
 
       <h3>Reading goal</h3>
-      <p id="goal-message">Set a reading goal in Settings.</p>
+      <p id="goal-message" aria-live="polite">Set a reading goal in Settings.</p>
 
       <h3>Last 7 days</h3>
       <div class="chart" id="chart"></div>
@@ -127,7 +127,8 @@
 
         <div class="field">
           <label for="date-added">Date added</label>
-          <input id="date-added" name="dateAdded" type="text" placeholder="YYYY-MM-DD">
+          <input id="date-added" name="dateAdded" type="text" placeholder="YYYY-MM-DD" aria-describedby="date-added-error">
+          <p class="error-message" id="date-added-error"></p>
         </div>
 
         <div class="field">

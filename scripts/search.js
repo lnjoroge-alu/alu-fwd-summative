@@ -1,4 +1,4 @@
-=
+
 export function compileRegex(text, ignoreCase) {
   if (text === "") {
     return null;
@@ -44,5 +44,24 @@ export function sortRecords(list, key, direction) {
   });
 
   return copy;
+}
+
+// Make text safe to put on the page (turn < > & into harmless codes).
+export function escapeHtml(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+// Wrap the matching parts of the text in <mark> tags.
+export function highlight(text, re) {
+  const safe = escapeHtml(text);
+  if (re === null) {
+    return safe;
+  }
+  return safe.replace(re, function (match) {
+    return "<mark>" + match + "</mark>";
+  });
 }
 

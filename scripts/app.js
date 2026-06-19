@@ -9,9 +9,9 @@ import {
 } from "./validators.js";
 import { getRecords, addRecord } from "./state.js";
 import { compileRegex, recordMatches, sortRecords } from "./search.js";
-import { renderRecords } from "./ui.js";
+import { renderRecords, renderStats } from "./ui.js";
 
-// ---------- Tabs ----------
+//  Tabs 
 
 const tabs = document.querySelectorAll(".tab");
 const sections = document.querySelectorAll("main > section");
@@ -40,7 +40,7 @@ tabs.forEach(function (tab) {
   });
 });
 
-// ---------- Search and sort settings ----------
+//  Search and sort settings 
 // These remember what the user has chosen, and refresh() redraws the list.
 
 let sortKey = "dateAdded";
@@ -115,7 +115,18 @@ function updateSortIndicators() {
   });
 }
 
-// ---------- Form validation and adding a book ----------
+//  Dashboard stats 
+
+const readingGoalInput = document.getElementById("reading-goal");
+
+// Read the goal number from Settings and redraw the dashboard.
+function updateStats() {
+  renderStats(getRecords(), Number(readingGoalInput.value));
+}
+
+readingGoalInput.addEventListener("input", updateStats);
+
+//  Form validation and adding a book 
 
 const form = document.getElementById("book-form");
 const statusBox = document.getElementById("form-status");
@@ -180,6 +191,7 @@ form.addEventListener("submit", function (event) {
   };
   addRecord(book);
   form.reset(); // clears the inputs (and the reset handler clears any errors)
+  updateStats(); // the new book changes the totals
 
   if (hasRepeatedWord(book.title)) {
     statusBox.textContent = "Book added. Tip: your title repeats a word.";
@@ -201,6 +213,7 @@ form.addEventListener("reset", function () {
   statusBox.textContent = "";
 });
 
-// ---------- Start ----------
+//  Start 
 updateSortIndicators();
 refresh();
+updateStats();

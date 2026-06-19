@@ -45,6 +45,13 @@
   border-radius: 6px;
 }
 
+/* one bar per day in the last-7-days chart */
+.bar {
+  flex: 1;
+  background: #2b5fd9;
+  border-radius: 3px 3px 0 0;
+}
+
 /* records search controls */
 .records-controls {
   display: flex;
