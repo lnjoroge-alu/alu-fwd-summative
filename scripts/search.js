@@ -1,4 +1,4 @@
-=
+
 export function compileRegex(text, ignoreCase) {
   if (text === "") {
     return null;
